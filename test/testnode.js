@@ -1,6 +1,6 @@
 var mocha = require('mocha');
 var request = require('supertest');
-var server = require('server');
+var server = require('./../server');
 
 describe('test server.js', function() {
 
