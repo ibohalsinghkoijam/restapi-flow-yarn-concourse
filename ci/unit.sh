@@ -3,5 +3,6 @@ set -e
 
 cd repo-basic/
 
-npm install
+rm -rf node_modules yarn.lock
+yarn install
 npm run test
