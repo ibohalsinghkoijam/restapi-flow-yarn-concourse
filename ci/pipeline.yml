@@ -1,0 +1,57 @@
+groups:
+  - name: Production
+    jobs: 
+     - job-run-master
+  - name: Develop
+    jobs: 
+     - job-run-develop    
+  - name: Feature
+    jobs: 
+     - job-run-feature  
+
+resources:
+- name: repo-master
+  type: git
+  source: 
+    uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+    branch: master
+
+- name: repo-develop
+  type: git
+  source: 
+    uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+    branch: develop
+
+- name: repo-feature
+  type: git
+  source: 
+    uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+    branch: feature/*
+
+jobs:
+- name: job-run-master
+  public: true
+  plan:
+   - get: repo-basic
+     resource: repo-master
+     trigger: true
+   - task: unit-test-master
+     file: repo-basic/ci/unit.yml
+
+- name: job-run-develop
+  public: true
+  plan:
+   - get: repo-basic
+     resource: repo-develop
+     trigger: true
+   - task: unit-test-develop
+     file: repo-basic/ci/unit.yml
+
+- name: job-run-feature
+  public: true
+  plan:
+   - get: repo-basic
+     resource: repo-feature
+     trigger: true
+   - task: unit-test-develop
+     file: repo-basic/ci/unit.yml
