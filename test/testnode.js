@@ -10,9 +10,9 @@ describe('test server.js', function() {
             .expect(200, done);
     });
 
-    after(function (done) {
-        done();
-       process.exit(1);
- })
+//     after(function (done) {
+//         done();
+//        process.exit(1);
+//  })
 
 });
