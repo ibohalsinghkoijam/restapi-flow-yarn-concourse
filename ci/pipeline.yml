@@ -29,14 +29,39 @@ resources:
     branch: feature/*
 
 jobs:
+# - name: job-run-master
+#   public: true
+#   plan:
+#    - get: repo-basic
+#      resource: repo-master
+#      trigger: true
+#    - task: unit-test-master
+#      file: repo-basic/ci/unit.yml
+
 - name: job-run-master
   public: true
   plan:
-   - get: repo-basic
-     resource: repo-master
-     trigger: true
-   - task: unit-test-master
-     file: repo-basic/ci/unit.yml
+    - get: repo-basic
+      resource: repo-master
+      trigger: true
+    - task: unit-test-master
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source: { repository: node, tag: "8" }
+        inputs:
+          - name: repo-basic
+        run:
+          path: /bin/sh
+          args:
+            - -c
+            - |
+              echo "Node Version: $(node --version)"
+              echo "NPM Version: $(npm --version)"
+              cd repo-basic
+              yarn install
+              yarn test
 
 - name: job-run-develop
   public: true

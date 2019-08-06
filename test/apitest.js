@@ -5,7 +5,7 @@ var chai = require("chai"),
 
 var server = supertest.agent("http://localhost:3000")
 
-xdescribe("Employee API Test Suite", function() {
+describe("Employee API Test Suite", function() {
     // calling home page api
     it("should return home page", function(done) {
         server.get("/")
