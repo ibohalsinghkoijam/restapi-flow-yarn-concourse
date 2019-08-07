@@ -1,0 +1,176 @@
+groups:
+  - name: Feature
+    jobs:
+      - rhema-webapp-build-feature
+      - ecr-push-feature
+      - ecs-deploy-feature
+
+  # - name: Develop
+  #   jobs:
+  #     - rhema-webapp-build-develop
+  #     - rhema-webapp-ecr-push-develop
+  #     - rhema-webapp-ecs-deploy-develop
+  # - name: Production
+  #   jobs:
+  #     - rhema-webapp-build-master
+  #     - rhema-webapp-ecr-push-master
+  #     - rhema-webapp-ecs-deploy-master
+
+
+resources:
+  # - name: version
+  #   type: semver
+  #   source:
+  #     driver: s3
+  #     initial_version: 0.0.0
+  #     access_key_id: ((aws_access_key_id))
+  #     secret_access_key: ((aws_secret_access_key))
+  #     bucket: ((version-aws-bucket))
+  #     region_name: us-west-2
+  #     key: rhema-file/version
+
+  - name: my-dockerhub
+    type: docker-image
+    source:
+      email: ((docker-hub-email))
+      username: ((docker-hub-username))
+      password: ((docker-hub-password))
+      repository: ((docker-hub-username))/node-test-server
+
+  - name: rhema-webapp-master
+    type: git
+    source: &bitbucket-repo
+      uri: ((bitbucket_url))
+      username: ((username))
+      password: ((password))
+      branch: master
+
+  # - name: rhema-webapp-develop
+  #   type: git
+  #   source:
+  #     <<: *bitbucket-repo
+  #     branch: develop
+
+  # - name: rhema-webapp-feature
+  #   type: git
+  #   source:
+  #     <<: *bitbucket-repo
+  #     branch: ((branch-version))
+
+jobs:
+  # - name: display-version
+  #   public: true
+  #   plan:
+  #     - get: rhema-frontend
+  #       resource: version
+  #       trigger: true
+  #     - task: display-version
+  #       #file: rhema-frontend/ci/unit.yml
+  #       config:
+  #         platform: linux
+  #         image_resource:
+  #           type: docker-image
+  #           source: {repository: busybox}
+  #         inputs:
+  #           - name: rhema-frontend
+  #         run:
+  #           path: sh
+  #           args:
+  #             - -c
+  #             - |
+  #               ls -al
+  #               cd rhema-frontend/
+  #               ls -al
+  #            path: cat
+  #            args: [rhema-frontend/number]
+
+  - name: rhema-webapp-build-master
+    public: true
+    plan:
+      - get: rhema-frontend
+        resource: rhema-webapp-master
+        trigger: true
+      - task: unit-test-master
+        file: rhema-frontend/ci/unit.yml
+
+  
+
+  #New testing
+  - name: ecr-push-feature
+    public: true
+    plan:
+      - get: rhema-frontend
+        resource: rhema-webapp-feature
+        version: "every"
+        trigger: true
+        passed: [rhema-webapp-build-feature]
+      - put: my-dockerhub
+        params:
+          build: rhema-frontend
+          build_args:
+            NG_BUILD_TARGET: dev
+          dockerfile: rhema-frontend/Dockerfile
+
+  - name: rhema-webapp-build-feature
+    public: true
+    plan:
+      - get: rhema-frontend
+        resource: rhema-webapp-feature
+        trigger: true
+      - task: unit-test-feature
+        file: rhema-frontend/ci/unit.yml
+  #        config:
+  #          platform: linux
+  #          image_resource:
+  #            type: docker-image
+  #            source: {repository: busybox}
+  #          run:
+  #            path: sh
+  #            args:
+  #              - -c
+  #              - |
+  #                pwd
+  #                ls -al
+
+  #New testing
+  - name: ecs-deploy-feature
+    public: true
+    plan:
+      - get: rhema-frontend
+        resource: rhema-webapp-feature
+        version: "every"
+        trigger: true
+        passed: [ecr-push-feature]
+      - task: ecs-cli-deploy-feature
+        #file: rhema-frontend/ci/develop/ecs-deploy-task.yml
+        config:
+          platform: linux
+
+          image_resource:
+            type: docker-image
+            source: { repository: sahsu/docker-ecs-cli}
+
+          inputs:
+            - name: rhema-frontend
+              path: rhema-frontend  
+          run:
+            path: sh
+            args:
+            - -c
+            - |
+              ls -al
+              chmod 755 rhema-frontend/ci/develop/ecs-cli-deploy.sh
+              ls -al
+              rhema-frontend/ci/develop/ecs-cli-deploy.sh ((aws_access_key_id)) ((aws_secret_access_key))
+
+ 
+- name: rhema-webapp-ecs-deploy-master
+    public: true
+    plan:
+      - get: rhema-frontend
+        resource: rhema-webapp-master
+        version: "every"
+        trigger: true
+        passed: [rhema-webapp-ecr-push-master]
+      - task: ecs-cli-deploy-master
+        

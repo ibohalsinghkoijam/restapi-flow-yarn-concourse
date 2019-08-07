@@ -2,6 +2,8 @@ groups:
   - name: Production
     jobs: 
      - job-run-master
+     - job-push-master
+    #  - job-deploy-master
   - name: Develop
     jobs: 
      - job-run-develop    
@@ -12,9 +14,29 @@ groups:
 resources:
 - name: repo-master
   type: git
-  source: 
-    uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
-    branch: master
+  source: &git-repo
+      uri: ((git_url))
+      # username: ((username))
+      # password: ((password))
+      branch: master
+  # source: 
+  #   uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+  #   branch: master
+
+- name: my-dockerhub
+  type: docker-image
+  source:
+    email: ((docker-hub-email))
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    repository: ((docker-hub-username))/node-server
+
+# - name: aws-repo-master
+#     type: docker-image
+#     source: &ecr-repo
+#       aws_access_key_id: ((aws_access_key_id))
+#       aws_secret_access_key: ((aws_secret_access_key))
+#       repository: ((aws_prod_repository))
 
 - name: repo-develop
   type: git
@@ -62,6 +84,31 @@ jobs:
               cd repo-basic
               yarn install
               yarn test
+# - name: job-push-master
+#     public: true
+#     plan:
+#       - get: repo-basic
+#         resource: repo-master
+#         trigger: true
+#         passed: [job-build-master]
+#       - put: aws-repo-master
+#         params:
+#           build: repo-basic
+#           build_args:
+#             NG_BUILD_TARGET: prod
+#           dockerfile: repo-basic/Dockerfile
+- name: job-push-master
+  public: true
+  plan:
+    - get: repo-basic
+      resource: repo-master
+      version: "every"
+      trigger: true
+      passed: [job-run-master]
+    - put: my-dockerhub
+      params:
+        build: repo-basic
+        dockerfile: repo-basic/Dockerfile
 
 - name: job-run-develop
   public: true
