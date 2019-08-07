@@ -16,12 +16,13 @@ resources:
   type: git
   source: &git-repo
       uri: ((git_url))
-      # username: ((username))
-      # password: ((password))
       branch: master
-  # source: 
-  #   uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
-  #   branch: master
+
+      # - name: repo-develop
+#   type: git
+#   source: 
+#     uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+#     branch: develop
 
 - name: repo-develop
   type: git
@@ -29,23 +30,11 @@ resources:
     <<: *git-repo
     branch: develop
 
-# - name: repo-develop
-#   type: git
-#   source: 
-#     uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
-#     branch: develop
-
 - name: repo-feature
   type: git
   source:
     <<: *git-repo
     branch: ((branch-version))
-
-# - name: repo-feature
-#   type: git
-#   source: 
-#     uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
-#     branch: feature/*
 
 - name: my-dockerhub
   type: docker-image
@@ -53,7 +42,7 @@ resources:
     email: ((docker-hub-email))
     username: ((docker-hub-username))
     password: ((docker-hub-password))
-    repository: ((docker-hub-username))/node-server
+    repository: ((docker-hub-username))
 
 # - name: aws-repo-master
 #     type: docker-image
@@ -66,36 +55,36 @@ jobs:
 # - name: job-run-master
 #   public: true
 #   plan:
-#    - get: repo-basic
-#      resource: repo-master
-#      trigger: true
-#    - task: unit-test-master
-#      file: repo-basic/ci/unit.yml
-
+#     - get: repo-basic
+#       resource: repo-master
+#       trigger: true
+#     - task: unit-test-master
+#       config:
+#         platform: linux
+#         image_resource:
+#           type: registry-image
+#           source: { repository: node, tag: "8" }
+#         inputs:
+#           - name: repo-basic
+#         run:
+#           path: /bin/sh
+#           args:
+#             - -c
+#             - |
+#               echo "Node Version: $(node --version)"
+#               echo "NPM Version: $(npm --version)"
+#               cd repo-basic
+#               yarn install
+#               yarn test
 - name: job-run-master
   public: true
   plan:
-    - get: repo-basic
-      resource: repo-master
-      trigger: true
-    - task: unit-test-master
-      config:
-        platform: linux
-        image_resource:
-          type: registry-image
-          source: { repository: node, tag: "8" }
-        inputs:
-          - name: repo-basic
-        run:
-          path: /bin/sh
-          args:
-            - -c
-            - |
-              echo "Node Version: $(node --version)"
-              echo "NPM Version: $(npm --version)"
-              cd repo-basic
-              yarn install
-              yarn test
+   - get: repo-basic
+     resource: repo-master
+     trigger: true
+   - task: unit-test-master
+     file: repo-basic/ci/unit.yml
+
 # - name: job-push-master
 #     public: true
 #     plan:
@@ -112,15 +101,29 @@ jobs:
 - name: job-push-master
   public: true
   plan:
-    - get: repo-basic
-      resource: repo-master
-      version: "every"
-      trigger: true
-      passed: [job-run-master]
-    - put: my-dockerhub
-      params:
-        build: repo-basic
-        dockerfile: repo-basic/Dockerfile
+  - get: repo-basic
+    resource: repo-master
+    # version: "every"
+    trigger: true
+    # passed: [job-run-master]
+  - put: my-dockerhub
+    params:
+      build: repo-basic
+  - task: push-dockerhub
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: ((username))/node-sample-test
+        # inputs:
+        #   - name: repo-basic
+      run:
+        path: /bin/sh
+        args:
+          - -c
+          - |
+            ls
 
 - name: job-run-develop
   public: true
