@@ -23,6 +23,30 @@ resources:
   #   uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
   #   branch: master
 
+- name: repo-develop
+  type: git
+  source: 
+    <<: *git-repo
+    branch: develop
+
+# - name: repo-develop
+#   type: git
+#   source: 
+#     uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+#     branch: develop
+
+- name: repo-feature
+  type: git
+  source:
+    <<: *git-repo
+    branch: ((branch-version))
+
+# - name: repo-feature
+#   type: git
+#   source: 
+#     uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+#     branch: feature/*
+
 - name: my-dockerhub
   type: docker-image
   source:
@@ -37,18 +61,6 @@ resources:
 #       aws_access_key_id: ((aws_access_key_id))
 #       aws_secret_access_key: ((aws_secret_access_key))
 #       repository: ((aws_prod_repository))
-
-- name: repo-develop
-  type: git
-  source: 
-    uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
-    branch: develop
-
-- name: repo-feature
-  type: git
-  source: 
-    uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
-    branch: feature/*
 
 jobs:
 # - name: job-run-master
