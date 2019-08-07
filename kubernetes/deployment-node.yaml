@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: node-test-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node-server
+    spec:
+      containers:
+      - name: node-server
+        image: ibohal1802/node-sample-test
+        ports:
+        - containerPort: 3000

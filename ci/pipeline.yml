@@ -61,7 +61,7 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: ((username))/node-sample-test
+          repository: ((docker-hub-username))/node-sample-test
         # inputs:
         #   - name: repo-basic
       run:
