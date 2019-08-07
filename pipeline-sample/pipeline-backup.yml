@@ -1,9 +1,40 @@
+groups:
+  - name: Production
+    jobs: 
+     - job-run-master
+     - job-push-master
+    #  - job-deploy-master
+  - name: Develop
+    jobs: 
+     - job-run-develop    
+  - name: Feature
+    jobs: 
+     - job-run-feature  
+
 resources:
 - name: repo-master
   type: git
   source: &git-repo
       uri: ((git_url))
       branch: master
+
+      # - name: repo-develop
+#   type: git
+#   source: 
+#     uri: https://github.com/ibohalsinghkoijam/restapi-flow-yarn-concourse.git
+#     branch: develop
+
+- name: repo-develop
+  type: git
+  source: 
+    <<: *git-repo
+    branch: develop
+
+- name: repo-feature
+  type: git
+  source:
+    <<: *git-repo
+    branch: ((branch-version))
 
 - name: my-dockerhub
   type: docker-image
@@ -21,6 +52,30 @@ resources:
 #       repository: ((aws_prod_repository))
 
 jobs:
+# - name: job-run-master
+#   public: true
+#   plan:
+#     - get: repo-basic
+#       resource: repo-master
+#       trigger: true
+#     - task: unit-test-master
+#       config:
+#         platform: linux
+#         image_resource:
+#           type: registry-image
+#           source: { repository: node, tag: "8" }
+#         inputs:
+#           - name: repo-basic
+#         run:
+#           path: /bin/sh
+#           args:
+#             - -c
+#             - |
+#               echo "Node Version: $(node --version)"
+#               echo "NPM Version: $(npm --version)"
+#               cd repo-basic
+#               yarn install
+#               yarn test
 - name: job-run-master
   public: true
   plan:
@@ -43,7 +98,6 @@ jobs:
 #           build_args:
 #             NG_BUILD_TARGET: prod
 #           dockerfile: repo-basic/Dockerfile
-
 - name: job-push-master
   public: true
   plan:
@@ -70,3 +124,21 @@ jobs:
           - -c
           - |
             ls
+
+- name: job-run-develop
+  public: true
+  plan:
+   - get: repo-basic
+     resource: repo-develop
+     trigger: true
+   - task: unit-test-develop
+     file: repo-basic/ci/unit.yml
+
+- name: job-run-feature
+  public: true
+  plan:
+   - get: repo-basic
+     resource: repo-feature
+     trigger: true
+   - task: unit-test-develop
+     file: repo-basic/ci/unit.yml
