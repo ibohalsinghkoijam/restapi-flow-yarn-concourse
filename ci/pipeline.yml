@@ -24,37 +24,37 @@ jobs:
 - name: job-run-master
   public: true
   plan:
-   - get: repo-basic
+   - get: concourse-sample
      resource: repo-master
      trigger: true
    - task: unit-test-master
-     file: repo-basic/ci/unit.yml
+     file: concourse-sample/ci/unit.yml
 
 # - name: job-push-master
 #     public: true
 #     plan:
-#       - get: repo-basic
+#       - get: concourse-sample
 #         resource: repo-master
 #         trigger: true
 #         passed: [job-build-master]
 #       - put: aws-repo-master
 #         params:
-#           build: repo-basic
+#           build: concourse-sample
 #           build_args:
 #             NG_BUILD_TARGET: prod
-#           dockerfile: repo-basic/Dockerfile
+#           dockerfile: concourse-sample/Dockerfile
 
 - name: job-push-master
   public: true
   plan:
-  - get: repo-basic
+  - get: concourse-sample
     resource: repo-master
     # version: "every"
     trigger: true
     # passed: [job-run-master]
   - put: my-dockerhub
     params:
-      build: repo-basic
+      build: concourse-sample
   - task: push-dockerhub
     config:
       platform: linux
@@ -63,7 +63,7 @@ jobs:
         source:
           repository: ((docker-hub-username))/node-sample-test
         # inputs:
-        #   - name: repo-basic
+        #   - name: concourse-sample
       run:
         path: /bin/sh
         args:

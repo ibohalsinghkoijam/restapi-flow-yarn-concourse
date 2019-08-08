@@ -55,7 +55,7 @@ jobs:
 # - name: job-run-master
 #   public: true
 #   plan:
-#     - get: repo-basic
+#     - get: concourse-sample
 #       resource: repo-master
 #       trigger: true
 #     - task: unit-test-master
@@ -65,7 +65,7 @@ jobs:
 #           type: registry-image
 #           source: { repository: node, tag: "8" }
 #         inputs:
-#           - name: repo-basic
+#           - name: concourse-sample
 #         run:
 #           path: /bin/sh
 #           args:
@@ -73,42 +73,42 @@ jobs:
 #             - |
 #               echo "Node Version: $(node --version)"
 #               echo "NPM Version: $(npm --version)"
-#               cd repo-basic
+#               cd concourse-sample
 #               yarn install
 #               yarn test
 - name: job-run-master
   public: true
   plan:
-   - get: repo-basic
+   - get: concourse-sample
      resource: repo-master
      trigger: true
    - task: unit-test-master
-     file: repo-basic/ci/unit.yml
+     file: concourse-sample/ci/unit.yml
 
 # - name: job-push-master
 #     public: true
 #     plan:
-#       - get: repo-basic
+#       - get: concourse-sample
 #         resource: repo-master
 #         trigger: true
 #         passed: [job-build-master]
 #       - put: aws-repo-master
 #         params:
-#           build: repo-basic
+#           build: concourse-sample
 #           build_args:
 #             NG_BUILD_TARGET: prod
-#           dockerfile: repo-basic/Dockerfile
+#           dockerfile: concourse-sample/Dockerfile
 - name: job-push-master
   public: true
   plan:
-  - get: repo-basic
+  - get: concourse-sample
     resource: repo-master
     # version: "every"
     trigger: true
     # passed: [job-run-master]
   - put: my-dockerhub
     params:
-      build: repo-basic
+      build: concourse-sample
   - task: push-dockerhub
     config:
       platform: linux
@@ -117,7 +117,7 @@ jobs:
         source:
           repository: ((username))/node-sample-test
         # inputs:
-        #   - name: repo-basic
+        #   - name: concourse-sample
       run:
         path: /bin/sh
         args:
@@ -128,17 +128,17 @@ jobs:
 - name: job-run-develop
   public: true
   plan:
-   - get: repo-basic
+   - get: concourse-sample
      resource: repo-develop
      trigger: true
    - task: unit-test-develop
-     file: repo-basic/ci/unit.yml
+     file: concourse-sample/ci/unit.yml
 
 - name: job-run-feature
   public: true
   plan:
-   - get: repo-basic
+   - get: concourse-sample
      resource: repo-feature
      trigger: true
    - task: unit-test-develop
-     file: repo-basic/ci/unit.yml
+     file: concourse-sample/ci/unit.yml

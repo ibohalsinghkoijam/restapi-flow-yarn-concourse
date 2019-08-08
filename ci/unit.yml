@@ -6,10 +6,10 @@ image_resource:
  source: { repository: node, tag: 8}
 
 inputs:
-- name: repo-basic
-  path: repo-basic
+- name: concourse-sample
+  path: concourse-sample
 
 run:
   path: sh
-  args: [repo-basic/ci/unit.sh]
+  args: [concourse-sample/ci/unit.sh]
 

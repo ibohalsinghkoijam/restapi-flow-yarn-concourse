@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-cd repo-basic/
+cd concourse-sample/
 
 yarn install
 yarn run test

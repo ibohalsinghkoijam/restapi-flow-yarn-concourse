@@ -3,7 +3,7 @@ var assert = require("chai").assert,
     should = require("chai").should();
 
 
-describe("Simple Testing", function(){
+xdescribe("Simple Testing", function(){
 
 	before("Before", function(){
 		console.log("** before ** ")
@@ -18,6 +18,10 @@ describe("Simple Testing", function(){
 		console.log("** afterEach **")
 	})	
 
+	// after(function (done) {
+    //     done();
+    //    process.exit(1);
+ 	// })
 
 	it("should return true", function(){
 		var name ="koijam";
