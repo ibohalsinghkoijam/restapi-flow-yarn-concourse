@@ -7,10 +7,6 @@ var chai = require("chai"),
 var request = supertest.agent(server.listen());
 
 describe("Employee API Test Suite", function() {
-    after(function (done) {
-        done();
-       process.exit(1);
- 	})
     // calling home page api
     it("should return home page", function(done) {
         request.get("/")
@@ -91,4 +87,10 @@ describe("Employee API Test Suite", function() {
                 done()
             })
     })
+    
 })
+
+// after(function (done) {
+//     done();
+//     process.exit(1);
+// });
