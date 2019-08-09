@@ -16,5 +16,5 @@ pushd "$DIR"
   #fly -t ${fly_target} trigger-job -w -j sample-pipeline/job-run-feature
   #fly -t ${fly_target} trigger-job -w -j sample-pipeline/job-run-develop
   fly -t ${fly_target} trigger-job -w -j restapi-pipeline/job-run-master
-  fly -t ${fly_target} trigger-job -w -j restapi-pipeline/job-run-master
+  fly -t ${fly_target} trigger-job -w -j restapi-pipeline/job-push-master
 popd
