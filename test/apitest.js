@@ -14,33 +14,33 @@ describe("Employee API Test Suite", function() {
             //.expect("content-type", /json/)
             .end(function(err, res) {
                 console.log(res.body)
-                //res.status.should.be.equal(200);
+                res.status.should.be.equal(200);
                 //res.info.should.be.false;
-                //res.charset.should.be.equal("utf-8")
-                //res.body.should.have.property("message").to.be.equal("Hello World")
+                res.charset.should.be.equal("utf-8")
+                res.body.should.have.property("message").to.be.equal("Hello World")
                 //JSON.parse(res.text).should.have.property("message").to.be.equal("Hello World")
                 done()
             })
     })
 
-//     it("should get the employee list ", function(done) {
-//         request.get("/employee")
-//             .expect(200)
-//             .expect("content-type", /json/)
-//             .end(function(err, res) {
-//                 console.log(res.body)
-//                 Array.isArray(res.body).should.be.true;
-//                 res.body.length.should.be.a("number");
-//                 res.body.forEach(function(item) {
-//                     item.should.have.property("_id");
-//                     item.should.have.property("name");
-//                     item.should.have.property("email");
-//                     item.should.have.property("email").to.contain("@")
-//                     item.should.have.property("email").to.contain(".com")
-//                 })
-//                 done()
-//             })
-//     })
+    it("should get the employee list ", function(done) {
+        request.get("/employee")
+            .expect(200)
+            .expect("content-type", /json/)
+            .end(function(err, res) {
+                console.log(res.body)
+                // Array.isArray(res.body).should.be.true;
+                // res.body.length.should.be.a("number");
+                res.body.forEach(function(item) {
+                    item.should.have.property("_id");
+                    item.should.have.property("name");
+                    item.should.have.property("email");
+                    item.should.have.property("email").to.contain("@")
+                    item.should.have.property("email").to.contain(".com")
+                })
+                done()
+            })
+    })
 
 //     it.skip("should add employee to the database", function(done) {
 //         var obj = {
