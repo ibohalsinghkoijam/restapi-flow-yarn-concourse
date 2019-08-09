@@ -1,27 +1,27 @@
-// var chai = require("chai"),
-//     expect = chai.expect,
-//     should = chai.should(),
-//     supertest = require("supertest");
-//     server = require('../server')
+var chai = require("chai"),
+    expect = chai.expect,
+    should = chai.should(),
+    supertest = require("supertest");
+    server = require('../server')
 
-// var request = supertest.agent(server.listen());
+var request = supertest.agent(server.listen());
 
-// describe("Employee API Test Suite", function() {
-//     // calling home page api
-//     it("should return home page", function(done) {
-//         request.get("/")
-//             .expect(200)
-//             //.expect("content-type", /json/)
-//             .end(function(err, res) {
-//                 console.log(res.body)
-//                 //res.status.should.be.equal(200);
-//                 //res.info.should.be.false;
-//                 //res.charset.should.be.equal("utf-8")
-//                 //res.body.should.have.property("message").to.be.equal("Hello World")
-//                 //JSON.parse(res.text).should.have.property("message").to.be.equal("Hello World")
-//                 done()
-//             })
-//     })
+describe("Employee API Test Suite", function() {
+    // calling home page api
+    it("should return home page", function(done) {
+        request.get("/")
+            .expect(200)
+            //.expect("content-type", /json/)
+            .end(function(err, res) {
+                console.log(res.body)
+                //res.status.should.be.equal(200);
+                //res.info.should.be.false;
+                //res.charset.should.be.equal("utf-8")
+                //res.body.should.have.property("message").to.be.equal("Hello World")
+                //JSON.parse(res.text).should.have.property("message").to.be.equal("Hello World")
+                done()
+            })
+    })
 
 //     it("should get the employee list ", function(done) {
 //         request.get("/employee")
@@ -88,7 +88,7 @@
 //             })
 //     })
     
-// })
+})
 
 // after(function (done) {
 //     done();
