@@ -9,7 +9,7 @@ const router = express.Router();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json())
 
-mongoose.connect("mongodb://localhost:37001/resetapidata", function() {
+mongoose.connect("mongodb://mongo:37001/resetapidata", function() {
 	console.log("Connected to Database")
 })
 
