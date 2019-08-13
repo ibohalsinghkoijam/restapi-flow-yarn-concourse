@@ -45,10 +45,12 @@ jobs:
     serial_groups:
     - version
     plan:
-    - get: gitrepo-master
+    - get: concourse-sample
+      resource: gitrepo-master
       passed: [unit]
       trigger: true
-    - get: version
+    - get: concourse-sample
+      resource: version
       params: {pre: rc}
     - task: build-artifact
       config:
