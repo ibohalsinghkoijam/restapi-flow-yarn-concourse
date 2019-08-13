@@ -1,0 +1,72 @@
+resources:
+- name: repo-master
+  type: git
+  source: &git-repo
+      uri: ((git_url))
+      branch: master
+
+- name: my-dockerhub
+  type: docker-image
+  source:
+    email: ((docker-hub-email))
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    repository: ((docker-hub-username))/node-sample-test
+
+# - name: aws-repo-master
+#     type: docker-image
+#     source: &ecr-repo
+#       aws_access_key_id: ((aws_access_key_id))
+#       aws_secret_access_key: ((aws_secret_access_key))
+#       repository: ((aws_prod_repository))
+
+jobs:
+- name: job-run-master
+  public: true
+  plan:
+   - get: concourse-sample
+     resource: repo-master
+     trigger: true
+   - task: unit-test-master
+     file: concourse-sample/ci/unit.yml
+
+# - name: job-push-master
+#     public: true
+#     plan:
+#       - get: concourse-sample
+#         resource: repo-master
+#         trigger: true
+#         passed: [job-build-master]
+#       - put: aws-repo-master
+#         params:
+#           build: concourse-sample
+#           build_args:
+#             NG_BUILD_TARGET: prod
+#           dockerfile: concourse-sample/Dockerfile
+
+- name: job-push-master
+  public: true
+  plan:
+  - get: concourse-sample
+    resource: repo-master
+    # version: "every"
+    trigger: true
+    # passed: [job-run-master]
+  - put: my-dockerhub
+    params:
+      build: concourse-sample
+  - task: push-dockerhub
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: ((docker-hub-username))/node-sample-test
+        # inputs:
+        #   - name: concourse-sample
+      run:
+        path: /bin/sh
+        args:
+          - -c
+          - |
+            ls
