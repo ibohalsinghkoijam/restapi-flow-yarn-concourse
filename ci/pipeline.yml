@@ -49,13 +49,13 @@ jobs:
           inputs:
             - name: concourse-app
           run:
-          #   path: sh
-          #   args:
-          #     - -c
-          #     - |
-          #       cd concourse-app/
-          #       ls -alR
-          #       path: cat
-          #       args: [version-bump/number]
-            path: ls
-            args: ["-alR"]
+            path: sh
+            args:
+              - -c
+              - |
+                cd concourse-app/
+                ls -alR
+                path: cat
+                args: [version/number]
+            # path: ls
+            # args: ["-alR"]
