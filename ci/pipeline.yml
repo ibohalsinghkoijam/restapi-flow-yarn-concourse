@@ -26,37 +26,72 @@ resources:
   #     password: ((docker-hub-password))
   #     repository: ((docker-hub-username))/version-test
 
-  # - name: gitrepo-master
-  #   type: git
-  #   source: &git-repo
-  #     uri: ((git_url))
-  #     branch: master
+  - name: gitrepo-master
+    type: git
+    source: &git-repo
+      uri: ((git_url))
+      branch: master
 
 jobs:
-  - name: display-version
-    public: true
+  - name: unit
     plan:
-      - get: concourse-app
-        resource: version
-        trigger: true
-      - task: display-version
-        #file: version-bump/ci/unit.yml
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source: {repository: busybox}
-          inputs:
-            - name: concourse-app
-            - path: concourse-app
-          run:
-            path: sh
-            args:
-              - -c
-              - |
-                cd concourse-app/
-                ls -alR
-                path: cat
-                args: [version-master]
+    - get: concourse-sample
+      resource: gitrepo-master
+      trigger: true
+    - task: unit
+      file: concourse-sample/ci/unit.yml
+
+  - name: build-rc
+    serial_groups:
+    - version
+    plan:
+    - get: gitrepo-master
+      passed: [unit]
+      trigger: true
+    - get: version
+      params: {pre: rc}
+    - task: build-artifact
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: busybox}
+        inputs:
+          - name: concourse-sample
+        run:
+          path: ls
+          args: ["-alR"]
+        # - task: build-artifact
+        #   file: my-product/ci/build-artifact.yml
+        # - put: my-product-rc
+        #   params: {file: build-artifact/my-product-*.tgz}
+        # - put: version
+        #   params: {file: version/version}
+
+  # - name: display-version
+  #   public: true
+  #   plan:
+  #     - get: concourse-sample
+  #       resource: version
+  #       trigger: true
+  #     - task: display-version
+  #       #file: version-bump/ci/unit.yml
+  #       config:
+  #         platform: linux
+  #         image_resource:
+  #           type: docker-image
+  #           source: {repository: busybox}
+  #         inputs:
+  #           - name: concourse-sample
+            
+  #         run:
+  #           path: sh
+  #           args:
+  #             - -c
+  #             - |
+  #               cd concourse-sample/
+  #               ls -alR
+  #               path: cat
+  #               args: [version-master]
             # path: ls
             # args: ["-alR"]
