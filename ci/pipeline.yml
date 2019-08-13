@@ -49,11 +49,13 @@ jobs:
           inputs:
             - name: version-bump
           run:
-            path: sh
-            args:
-              - -c
-              - |
-                cd version-bump/
-                ls -alR
-                path: cat
-                args: [version-bump/number]
+          #   path: sh
+          #   args:
+          #     - -c
+          #     - |
+          #       cd version-bump/
+          #       ls -alR
+          #       path: cat
+          #       args: [version-bump/number]
+            path: ls
+            args: ["-alR"]
