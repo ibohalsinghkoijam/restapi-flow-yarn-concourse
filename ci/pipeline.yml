@@ -56,6 +56,6 @@ jobs:
                 cd concourse-app/
                 ls -alR
                 path: cat
-                args: [version/number]
+                args: [number]
             # path: ls
             # args: ["-alR"]
