@@ -36,7 +36,7 @@ jobs:
   - name: display-version
     public: true
     plan:
-      - get: version-bump
+      - get: concourse-app
         resource: version
         trigger: true
       - task: display-version
@@ -47,13 +47,13 @@ jobs:
             type: docker-image
             source: {repository: busybox}
           inputs:
-            - name: version-bump
+            - name: concourse-app
           run:
           #   path: sh
           #   args:
           #     - -c
           #     - |
-          #       cd version-bump/
+          #       cd concourse-app/
           #       ls -alR
           #       path: cat
           #       args: [version-bump/number]
