@@ -54,6 +54,6 @@ jobs:
               - -c
               - |
                 cd version-bump/
-                ls -al
+                ls -alR
                 path: cat
                 args: [version-bump/number]
