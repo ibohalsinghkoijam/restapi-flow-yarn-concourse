@@ -48,6 +48,7 @@ jobs:
             source: {repository: busybox}
           inputs:
             - name: concourse-app
+            - path: concourse-app
           run:
             path: sh
             args:
